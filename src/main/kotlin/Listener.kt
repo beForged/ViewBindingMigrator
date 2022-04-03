@@ -1,9 +1,15 @@
-class Listener: KotlinParserBaseListener() {
+import contract.Collator
+
+class Listener(private val collator: Collator): KotlinParserBaseListener() {
 
     override fun enterImportList(ctx: KotlinParser.ImportListContext?) {
         super.enterImportList(ctx)
-        val name = ctx?.text
-        name?.split("\n")?.filter { it.contains("synthetic") }?.map { println(it) }
+        val importHeaders = ctx!!.importHeader()
+        importHeaders.map {
+            if(it.identifier().text.contains("synthetic")) {
+                collator.extractSyntheticFromImport(it.identifier().text, it.sourceInterval)
+            }
+        }
     }
 
     override fun enterConstructorInvocation(ctx: KotlinParser.ConstructorInvocationContext?) {
@@ -16,7 +22,10 @@ class Listener: KotlinParserBaseListener() {
 
     override fun enterFunctionDeclaration(ctx: KotlinParser.FunctionDeclarationContext?) {
         super.enterFunctionDeclaration(ctx)
-        if(ctx?.text?.contains("view") == true) { println(ctx.text) }
+        if(ctx != null) {
+            collator.extractFunctionDeclarations(ctx)
+        }
+        //ctx?.children?.map { println(it.text) }
+        //if(ctx?.text?.contains("view") == true) { println(ctx.text) }
     }
-
 }

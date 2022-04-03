@@ -110,7 +110,7 @@ DELEGATE: 'delegate';
 PACKAGE: 'package';
 IMPORT: 'import';
 CLASS: 'class';
-INTERFACE: 'interface';
+INTERFACE: 'contract';
 FUN: 'fun';
 OBJECT: 'object';
 VAL: 'val';

@@ -1,0 +1,4 @@
+package contract
+
+interface ConverterModel {
+}

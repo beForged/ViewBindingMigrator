@@ -1,7 +1,7 @@
-import org.antlr.v4.runtime.BufferedTokenStream
+import fragmentConverter.FragmentRewriter
+import fragmentConverter.KtFragmentCollator
 import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.tree.ParseTree
-import org.antlr.v4.runtime.tree.ParseTreeListener
+import org.antlr.v4.runtime.TokenStreamRewriter
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 
 fun main(args: Array<String>) {
@@ -9,6 +9,11 @@ fun main(args: Array<String>) {
 
     val file = args[0]
 
+    //fragment, activity, viewholder, adapter?,
+    val collator = when {
+        file.contains("Fragment", true) -> KtFragmentCollator(file)
+        else -> KtFragmentCollator(file)
+    }
 
     val stream = org.antlr.v4.runtime.ANTLRFileStream(file)
     val lexer = KotlinLexer(stream)
@@ -16,19 +21,26 @@ fun main(args: Array<String>) {
     KotlinLexer(null).tokenTypeMap
     val tokens = CommonTokenStream(lexer)
     val parser = KotlinParser(tokens)
+    val rewriter = TokenStreamRewriter(tokens)
 
     parser.buildParseTree = true
 
     val tree = parser.kotlinFile()
-    println( tree.children)
+    //tree.children.map { println(it.text) }
 
 
-    ParseTreeWalker.DEFAULT.walk(Listener(), tree.ruleContext)
+    ParseTreeWalker.DEFAULT.walk(Listener(collator), tree.ruleContext)
 
+//    println(collator.syntheticViews)
+//    println(collator.onCreateExists)
+//    println(collator.onDestroyExists)
 
-
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
+    val model = collator.fragmentConverterModel()
+    if(model != null) {
+        val re = FragmentRewriter()
+        re.rewriteFragment(model, rewriter)
+    }
+    println(rewriter.text)
 }
 
 
