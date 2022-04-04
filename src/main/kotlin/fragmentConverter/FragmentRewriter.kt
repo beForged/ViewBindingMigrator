@@ -6,6 +6,10 @@ import org.antlr.v4.runtime.TokenStreamRewriter
 
 class FragmentRewriter : Rewriter {
     fun rewriteFragment(model: FragmentConverterModel, rewriter: TokenStreamRewriter): TokenStreamRewriter {
+        // sanity check - ideally enforce idempotency
+        if (model.syntheticImports.isEmpty()) {
+            return rewriter
+        }
         // remove all synthetic imports
         model.syntheticImports.map {
             rewriter.replace(it.interval.a, it.interval.b, "")
