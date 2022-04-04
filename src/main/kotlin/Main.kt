@@ -1,5 +1,6 @@
 import fragmentConverter.FragmentRewriter
 import fragmentConverter.KtFragmentCollator
+import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.TokenStreamRewriter
 import org.antlr.v4.runtime.tree.ParseTreeWalker

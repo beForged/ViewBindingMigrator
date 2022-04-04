@@ -1,6 +1,5 @@
 package fragmentConverter
 
-import FragmentConverterModel
 import contract.ConverterModel
 import contract.Rewriter
 import org.antlr.v4.runtime.TokenStreamRewriter
@@ -34,6 +33,14 @@ class FragmentRewriter: Rewriter {
         }
         //replace every view instance of synthetic with ${CamelCaseLayoutId}Binding!!.view
         //if they have requireActivity(), may need to replace it with binding and snake->camelCase
+        model.viewReference.map {
+            rewriter.replace(
+                it.interval.a,
+                it.interval.b,
+                model.replaceViewReference(it.viewList)
+            )
+        }
+
         return rewriter
     }
 

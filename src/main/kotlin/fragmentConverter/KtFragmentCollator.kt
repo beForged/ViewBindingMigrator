@@ -1,15 +1,15 @@
 package fragmentConverter
 
-import FragmentConverterModel
 import KotlinParser
-import SyntheticImport
 import contract.Collator
+import contract.ConverterModel
 import org.antlr.v4.runtime.misc.Interval
 
 class KtFragmentCollator(filename: String): Collator {
 
     private val output: String = ""
-    val syntheticViews: MutableList<SyntheticImport> = mutableListOf()
+    val syntheticViews: MutableList<ConverterModel.SyntheticImport> = mutableListOf()
+    val viewReferences: MutableList<ConverterModel.ViewReference> = mutableListOf()
 
     fun appendOutput(s: String) {
         output.plus(s)
@@ -18,7 +18,7 @@ class KtFragmentCollator(filename: String): Collator {
     override fun extractSyntheticFromImport(s: String, i: Interval) {
         val view = s.split(".").reversed()[0]
         val layout = s.split(".").reversed()[1]
-        syntheticViews.add(SyntheticImport(layout, view, i))
+        syntheticViews.add(ConverterModel.SyntheticImport(layout, view, i))
     }
 
 
@@ -48,8 +48,19 @@ class KtFragmentCollator(filename: String): Collator {
                 bindingLocation = declarationContext.sourceInterval
             }
             else -> {
-                val contains = syntheticViews.map { declarationContext.functionBody().text.contains(it.view) }
-
+                val funBody = declarationContext.functionBody()
+                val contains = syntheticViews.map {
+                    funBody.text.contains(it.view)
+                }
+                if(contains.contains(true)) {
+                    //extracts function body with whitespace
+                    val text = declarationContext.functionBody().start.inputStream.getText(
+                        Interval(funBody.start.startIndex,funBody.stop.stopIndex)
+                    )
+                    viewReferences.add(ConverterModel.ViewReference(
+                        viewList = text.split("\n"),
+                        interval = declarationContext.functionBody().sourceInterval))
+                }
             }
         }
     }
@@ -64,7 +75,8 @@ class KtFragmentCollator(filename: String): Collator {
                 onCreateLocation = onCreateLocation,
                 onDestroyExists = onDestroyExists,
                 onDestroyLocation = onDestroyLocation,
-                syntheticImports = syntheticViews.toList()
+                syntheticImports = syntheticViews.toList(),
+                viewReference = viewReferences.toList()
             )
         } else {
             println("missing layoutId")

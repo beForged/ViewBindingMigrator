@@ -1,3 +1,5 @@
+package fragmentConverter
+
 import SyntheticMigratorUtils.Companion.snakeToLowerCamelCase
 import SyntheticMigratorUtils.Companion.snakeToUpperCamelCase
 import contract.ConverterModel
@@ -10,7 +12,8 @@ data class FragmentConverterModel(
     val onCreateLocation: Interval?,
     val onDestroyExists: Boolean,
     val onDestroyLocation: Interval?,
-    val syntheticImports: List<SyntheticImport>
+    val syntheticImports: List<ConverterModel.SyntheticImport>,
+    val viewReference: List<ConverterModel.ViewReference>
     ): ConverterModel {
 
     fun bindingClassName(): String {
@@ -67,21 +70,22 @@ data class FragmentConverterModel(
                 "\t\tsuper.onDestroyView()\n" +
                 "\t}\n"
     }
-}
 
-data class SyntheticImport(
-    val filename: String,
-    val view: String,
-    val interval: Interval
-) {
-    fun bindingClassName(): String {
-        return "${filename.snakeToUpperCamelCase()}Binding"
-    }
-    fun bindingVarName(): String {
-        return "${filename.snakeToLowerCamelCase()}Binding"
+    fun replaceViewReference(lst: List<String> ): String {
+        val ret = lst.map {
+            val synthetic = findViewName(it)
+            if(synthetic != null ){
+                it.replace(synthetic.view, "${synthetic.bindingVarName()}.${synthetic.view}")
+            } else {
+                it
+            }
+        }
+        return ret.joinToString("\n")
     }
 
-    fun localBindingName(): String {
-        return "binding${filename.snakeToUpperCamelCase()}"
+    //could probably take synthetic imports as a argument
+    //assumes that each line is contained such that there is only one view reference
+    private fun findViewName(s: String): ConverterModel.SyntheticImport? {
+        return syntheticImports.firstOrNull { s.contains(it.view) }
     }
 }
