@@ -5,15 +5,10 @@ import contract.Collator
 import contract.ConverterModel
 import org.antlr.v4.runtime.misc.Interval
 
-class KtFragmentCollator(filename: String) : Collator {
+class KtFragmentCollator() : Collator {
 
-    private val output: String = ""
     val syntheticViews: MutableList<ConverterModel.SyntheticImport> = mutableListOf()
     val viewReferences: MutableList<ConverterModel.ViewReference> = mutableListOf()
-
-    fun appendOutput(s: String) {
-        output.plus(s)
-    }
 
     override fun extractSyntheticFromImport(s: String, i: Interval) {
         val view = s.split(".").reversed()[0]
