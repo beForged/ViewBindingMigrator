@@ -8,17 +8,19 @@ import java.io.File
 class FileConverter {
     companion object {
         private const val FRAGMENT = "Fragment"
+        private const val ACTIVITY = "Activity"
+        private const val VIEWHOLDER = "ViewHolder"
     }
     fun convert(file: File): Boolean {
         val fileName = file.absolutePath
-        if (fileName.contains(FRAGMENT).not()) {
-            println("unsupported nonfragment file: $fileName")
-            return false
-        }
+
         // fragment, activity, viewholder, adapter?,
         val collator = when {
             fileName.contains(FRAGMENT) -> KtFragmentCollator()
-            else -> KtFragmentCollator()
+            else -> {
+                println("unsupported filetype $fileName")
+                return false
+            }
         }
 
         val stream = org.antlr.v4.runtime.ANTLRFileStream(fileName)
@@ -36,13 +38,16 @@ class FileConverter {
 
         val model = when {
             fileName.contains(FRAGMENT) -> collator.fragmentConverterModel()
-            else -> collator.fragmentConverterModel()
+            fileName.contains(ACTIVITY) -> return false
+            else -> return false
         }
         if (model != null) {
             when {
                 fileName.contains(FRAGMENT) -> {
                     val re = FragmentRewriter()
                     re.rewriteFragment(model, rewriter)
+                }
+                fileName.contains(ACTIVITY) -> {
                 }
             }
         }
