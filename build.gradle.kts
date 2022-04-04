@@ -4,6 +4,7 @@ plugins {
     antlr
     kotlin("jvm") version "1.5.10"
     application
+    id("org.jmailen.kotlinter") version "3.5.0"
 }
 
 group = "me.scarlet"

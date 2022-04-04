@@ -5,7 +5,7 @@ import contract.Collator
 import contract.ConverterModel
 import org.antlr.v4.runtime.misc.Interval
 
-class KtFragmentCollator(filename: String): Collator {
+class KtFragmentCollator(filename: String) : Collator {
 
     private val output: String = ""
     val syntheticViews: MutableList<ConverterModel.SyntheticImport> = mutableListOf()
@@ -21,7 +21,6 @@ class KtFragmentCollator(filename: String): Collator {
         syntheticViews.add(ConverterModel.SyntheticImport(layout, view, i))
     }
 
-
     var layoutBindingName: String? = null
     var bindingLocation: Interval? = null
     var onCreateExists = false
@@ -33,7 +32,7 @@ class KtFragmentCollator(filename: String): Collator {
         declarationContext: KotlinParser.FunctionDeclarationContext
     ) {
         val functionName = declarationContext.simpleIdentifier().Identifier()
-        //println(functionName)
+        // println(functionName)
         when {
             functionName.text.equals("onViewCreated") -> {
                 onCreateExists = true
@@ -52,21 +51,24 @@ class KtFragmentCollator(filename: String): Collator {
                 val contains = syntheticViews.map {
                     funBody.text.contains(it.view)
                 }
-                if(contains.contains(true)) {
-                    //extracts function body with whitespace
+                if (contains.contains(true)) {
+                    // extracts function body with whitespace
                     val text = declarationContext.functionBody().start.inputStream.getText(
-                        Interval(funBody.start.startIndex,funBody.stop.stopIndex)
+                        Interval(funBody.start.startIndex, funBody.stop.stopIndex)
                     )
-                    viewReferences.add(ConverterModel.ViewReference(
-                        viewList = text.split("\n"),
-                        interval = declarationContext.functionBody().sourceInterval))
+                    viewReferences.add(
+                        ConverterModel.ViewReference(
+                            viewList = text.split("\n"),
+                            interval = declarationContext.functionBody().sourceInterval
+                        )
+                    )
                 }
             }
         }
     }
 
     fun fragmentConverterModel(): FragmentConverterModel? {
-        return if( layoutBindingName != null
+        return if (layoutBindingName != null
         ) {
             FragmentConverterModel(
                 bindingName = layoutBindingName!!,
@@ -83,5 +85,4 @@ class KtFragmentCollator(filename: String): Collator {
             null
         }
     }
-
 }

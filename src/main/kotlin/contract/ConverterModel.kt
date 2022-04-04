@@ -26,7 +26,5 @@ interface ConverterModel {
     data class ViewReference(
         val viewList: List<String>,
         val interval: Interval
-    ) {
-
-    }
+    )
 }

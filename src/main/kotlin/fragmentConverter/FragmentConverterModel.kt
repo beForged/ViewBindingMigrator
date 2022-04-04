@@ -14,7 +14,7 @@ data class FragmentConverterModel(
     val onDestroyLocation: Interval?,
     val syntheticImports: List<ConverterModel.SyntheticImport>,
     val viewReference: List<ConverterModel.ViewReference>
-    ): ConverterModel {
+) : ConverterModel {
 
     fun bindingClassName(): String {
         return "${bindingName.snakeToUpperCamelCase()}Binding"
@@ -22,7 +22,7 @@ data class FragmentConverterModel(
 
     fun lateinitBinding(): String {
         return "private var _binding: ${bindingClassName()}? = null\n" +
-               "private val binding get() = _binding"
+            "private val binding get() = _binding"
     }
 
     fun bindingVariables(): String {
@@ -36,7 +36,7 @@ data class FragmentConverterModel(
         val onCreateLocalBindings = syntheticImports.map { it.filename }.distinct().map {
             onCreateViewInternal(it, it)
         }
-       return onCreateLocalBindings.joinToString("\n")
+        return onCreateLocalBindings.joinToString("\n")
     }
 
     private fun onCreateViewInternal(distinct: String, layoutBinding: String): String {
@@ -44,17 +44,16 @@ data class FragmentConverterModel(
         val bindingClassName = "${layoutBinding.snakeToUpperCamelCase()}Binding"
         val bindingVarName = "${layoutBinding.snakeToLowerCamelCase()}Binding"
         return "\n\t\tval binding$localVariableName= $bindingClassName.bind(view)\n" +
-                "\t\t${bindingVarName} = binding$localVariableName"
+            "\t\t$bindingVarName = binding$localVariableName"
     }
 
     fun onCreateViewOutputExternal(): String {
         return "\n\n\toverride fun onViewCreated(view: View, savedInstanceState: Bundle?) {\n" +
-                "\t\tsuper.onViewCreated(view, savedInstanceState)\n" +
-                onCreateViewOutput() +
-                "\t\t\\TODO add presenter oncreated callback\n" +
-                "\t}\n\n"
+            "\t\tsuper.onViewCreated(view, savedInstanceState)\n" +
+            onCreateViewOutput() +
+            "\t\t\\TODO add presenter oncreated callback\n" +
+            "\t}\n\n"
     }
-
 
     fun onDestroyViewInternal(): String {
         val destroyList = syntheticImports.map { it.filename }.distinct().map {
@@ -66,15 +65,15 @@ data class FragmentConverterModel(
 
     fun onDestroyViewExternal(): String {
         return "\n\n\toverride fun onDestroyView() {\n" +
-                onDestroyViewInternal() +
-                "\t\tsuper.onDestroyView()\n" +
-                "\t}\n"
+            onDestroyViewInternal() +
+            "\t\tsuper.onDestroyView()\n" +
+            "\t}\n"
     }
 
-    fun replaceViewReference(lst: List<String> ): String {
+    fun replaceViewReference(lst: List<String>): String {
         val ret = lst.map {
             val synthetic = findViewName(it)
-            if(synthetic != null ){
+            if (synthetic != null) {
                 it.replace(synthetic.view, "${synthetic.bindingVarName()}.${synthetic.view}")
             } else {
                 it
@@ -83,8 +82,7 @@ data class FragmentConverterModel(
         return ret.joinToString("\n")
     }
 
-    //could probably take synthetic imports as a argument
-    //assumes that each line is contained such that there is only one view reference
+    // assumes that each line is contained such that there is only one view reference
     private fun findViewName(s: String): ConverterModel.SyntheticImport? {
         return syntheticImports.firstOrNull { s.contains(it.view) }
     }
