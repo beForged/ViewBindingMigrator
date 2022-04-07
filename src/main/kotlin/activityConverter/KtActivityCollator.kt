@@ -9,7 +9,11 @@ class KtActivityCollator(
     override val viewReferences: MutableList<ConverterModel.ViewReference> = mutableListOf()
 ) : Collator {
 
+    var onCreateExists = false
+    var onCreateLocation: Interval? = null
+
     override fun extractFunctionDeclarations(declarationContext: KotlinParser.FunctionDeclarationContext) {
+        val functionName = declarationContext.simpleIdentifier().Identifier()
     }
 
     fun activityConverterModel(): ActivityConverterModel? {
