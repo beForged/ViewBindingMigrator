@@ -16,7 +16,17 @@ class FragmentRewriter : Rewriter {
         }
 
         // remove the layout id function (cant do this since its required by parent fragment)
-        // rewriter.replace(model.layoutIdFunction.a, model.layoutIdFunction.b, "")
+        //need to instead remove
+        //rewriter.replace(model.layoutIdFunction.a, model.layoutIdFunction.b, "")
+
+        /* add onCreatedView function to replace layoutId setting, but needs layout removal
+        //which includes butterknife work
+        if(model.onCreatedViewExists) {
+            rewriter.insertAfter(model.onCreatedViewLocation!!.a, model.onCreatedViewLayout())
+        } else {
+            rewriter.insertAfter(model.layoutIdFunction.b, model.onCreatedViewLayout())
+        }
+         */
 
         // add private binding variables
         // add in onCreate static bindings

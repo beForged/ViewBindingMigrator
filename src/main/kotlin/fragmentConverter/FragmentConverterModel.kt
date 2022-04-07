@@ -10,6 +10,8 @@ data class FragmentConverterModel(
     val layoutIdFunction: Interval,
     val onCreateExists: Boolean,
     val onCreateLocation: Interval?,
+    val onCreatedViewExists: Boolean,
+    val onCreatedViewLocation: Interval?,
     val onDestroyExists: Boolean,
     val onDestroyLocation: Interval?,
     val syntheticImports: List<ConverterModel.SyntheticImport>,
@@ -54,6 +56,24 @@ data class FragmentConverterModel(
             "\t\t\\TODO add presenter oncreated callback\n" +
             "\t}\n\n"
     }
+
+    fun onCreatedViewLayout(): String {
+        val innerBind = "\t\t_binding = ${bindingName.snakeToUpperCamelCase()}Binding.inflate(inflater, container, false)\n" +
+                "\t\tval view = binding.root\n" +
+                "\t\treturn view\n"
+        return if(onCreatedViewExists) {
+            innerBind
+        } else {
+            "\toverride fun onCreateView(\n" +
+                    "\t\tinflater: LayoutInflater,\n" +
+                    "\t\tcontainer: ViewGroup?,\n" +
+                    "\t\tsavedInstanceState: Bundle?\n" +
+                    "\t): View? {\n" +
+                    innerBind +
+                    "\t}\n"
+        }
+    }
+
 
     fun onDestroyViewInternal(): String {
         val destroyList = syntheticImports.map { it.filename }.distinct().map {

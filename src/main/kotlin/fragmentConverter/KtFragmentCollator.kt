@@ -16,6 +16,8 @@ class KtFragmentCollator(
     var onCreateLocation: Interval? = null
     var onDestroyExists = false
     var onDestroyLocation: Interval? = null
+    var onCreatedViewExists = false
+    var onCreatedViewLocation: Interval? = null
 
     override fun extractFunctionDeclarations(
         declarationContext: KotlinParser.FunctionDeclarationContext
@@ -26,6 +28,10 @@ class KtFragmentCollator(
             functionName.text.equals("onViewCreated") -> {
                 onCreateExists = true
                 onCreateLocation = declarationContext.functionBody().sourceInterval
+            }
+            functionName.text.equals("onCreatedView") -> {
+                onCreatedViewExists = true
+                onCreatedViewLocation = declarationContext.functionBody().sourceInterval
             }
             functionName.text.equals("onDestroyView") -> {
                 onDestroyExists = true
@@ -64,6 +70,8 @@ class KtFragmentCollator(
                 layoutIdFunction = bindingLocation!!,
                 onCreateExists = onCreateExists,
                 onCreateLocation = onCreateLocation,
+                onCreatedViewExists = onCreatedViewExists,
+                onCreatedViewLocation = onCreatedViewLocation,
                 onDestroyExists = onDestroyExists,
                 onDestroyLocation = onDestroyLocation,
                 syntheticImports = syntheticViews.toList(),
