@@ -3,7 +3,14 @@ package contract
 import org.antlr.v4.runtime.misc.Interval
 
 interface Collator {
-    fun extractSyntheticFromImport(s: String, i: Interval)
+    val syntheticViews: MutableList<ConverterModel.SyntheticImport>
+    val viewReferences: MutableList<ConverterModel.ViewReference>
+
+    fun extractSyntheticFromImport(s: String, i: Interval) {
+        val view = s.split(".").reversed()[0]
+        val layout = s.split(".").reversed()[1]
+        syntheticViews.add(ConverterModel.SyntheticImport(layout, view, i))
+    }
 
     fun extractFunctionDeclarations(declarationContext: KotlinParser.FunctionDeclarationContext)
 }

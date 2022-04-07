@@ -5,16 +5,10 @@ import contract.Collator
 import contract.ConverterModel
 import org.antlr.v4.runtime.misc.Interval
 
-class KtFragmentCollator() : Collator {
-
-    val syntheticViews: MutableList<ConverterModel.SyntheticImport> = mutableListOf()
-    val viewReferences: MutableList<ConverterModel.ViewReference> = mutableListOf()
-
-    override fun extractSyntheticFromImport(s: String, i: Interval) {
-        val view = s.split(".").reversed()[0]
-        val layout = s.split(".").reversed()[1]
-        syntheticViews.add(ConverterModel.SyntheticImport(layout, view, i))
-    }
+class KtFragmentCollator(
+    override val syntheticViews: MutableList<ConverterModel.SyntheticImport> = mutableListOf(),
+    override val viewReferences: MutableList<ConverterModel.ViewReference> = mutableListOf()
+) : Collator {
 
     var layoutBindingName: String? = null
     var bindingLocation: Interval? = null
@@ -63,7 +57,7 @@ class KtFragmentCollator() : Collator {
     }
 
     fun fragmentConverterModel(): FragmentConverterModel? {
-        return if (layoutBindingName != null
+        return if (layoutBindingName != null || syntheticViews.isEmpty()
         ) {
             FragmentConverterModel(
                 bindingName = layoutBindingName!!,
@@ -76,7 +70,7 @@ class KtFragmentCollator() : Collator {
                 viewReference = viewReferences.toList()
             )
         } else {
-            println("missing layoutId")
+            println("missing layoutId or synthetic imports")
             null
         }
     }
