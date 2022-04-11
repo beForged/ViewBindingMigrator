@@ -12,5 +12,11 @@ interface Collator {
         syntheticViews.add(ConverterModel.SyntheticImport(layout, view, i))
     }
 
+    fun functionBodyText(declarationContext: KotlinParser.FunctionBodyContext): String {
+        return declarationContext.start.inputStream.getText(
+            Interval(declarationContext.start.startIndex, declarationContext.stop.stopIndex)
+        )
+    }
+
     fun extractFunctionDeclarations(declarationContext: KotlinParser.FunctionDeclarationContext)
 }
