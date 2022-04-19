@@ -6,8 +6,8 @@ import contract.ConverterModel
 import org.antlr.v4.runtime.misc.Interval
 
 data class FragmentConverterModel(
-    val bindingName: String,
-    val layoutIdFunction: Interval,
+    val bindingName: String?,
+    val layoutIdFunction: Interval?,
     val onCreateExists: Boolean,
     val onCreateLocation: Interval?,
     val onCreatedViewExists: Boolean,
@@ -15,11 +15,12 @@ data class FragmentConverterModel(
     val onDestroyExists: Boolean,
     val onDestroyLocation: Interval?,
     val syntheticImports: List<ConverterModel.SyntheticImport>,
-    val viewReference: List<ConverterModel.ViewReference>
+    val viewReference: List<ConverterModel.ViewReference>,
+    val variableDeclInterval: Interval
 ) : ConverterModel {
 
     fun bindingClassName(): String {
-        return "${bindingName.snakeToUpperCamelCase()}Binding"
+        return "${bindingName?.snakeToUpperCamelCase()}Binding"
     }
 
     fun lateinitBinding(): String {
@@ -58,22 +59,21 @@ data class FragmentConverterModel(
     }
 
     fun onCreatedViewLayout(): String {
-        val innerBind = "\t\t_binding = ${bindingName.snakeToUpperCamelCase()}Binding.inflate(inflater, container, false)\n" +
-                "\t\tval view = binding.root\n" +
-                "\t\treturn view\n"
-        return if(onCreatedViewExists) {
+        val innerBind = "\t\t_binding = ${bindingName?.snakeToUpperCamelCase()}Binding.inflate(inflater, container, false)\n" +
+            "\t\tval view = binding.root\n" +
+            "\t\treturn view\n"
+        return if (onCreatedViewExists) {
             innerBind
         } else {
             "\toverride fun onCreateView(\n" +
-                    "\t\tinflater: LayoutInflater,\n" +
-                    "\t\tcontainer: ViewGroup?,\n" +
-                    "\t\tsavedInstanceState: Bundle?\n" +
-                    "\t): View? {\n" +
-                    innerBind +
-                    "\t}\n"
+                "\t\tinflater: LayoutInflater,\n" +
+                "\t\tcontainer: ViewGroup?,\n" +
+                "\t\tsavedInstanceState: Bundle?\n" +
+                "\t): View? {\n" +
+                innerBind +
+                "\t}\n"
         }
     }
-
 
     fun onDestroyViewInternal(): String {
         val destroyList = syntheticImports.map { it.filename }.distinct().map {

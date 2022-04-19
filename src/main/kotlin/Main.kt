@@ -1,7 +1,7 @@
 import java.io.File
 
 fun main(args: Array<String>) {
-    println("Program arguments: ${args.joinToString()}")
+    println("Program arguments: ${args.joinToString("\n")}")
 
     val root = args[0]
 

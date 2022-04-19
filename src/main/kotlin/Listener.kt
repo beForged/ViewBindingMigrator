@@ -26,4 +26,11 @@ class Listener(private val collator: Collator) : KotlinParserBaseListener() {
             collator.extractFunctionDeclarations(ctx)
         }
     }
+
+    override fun enterClassMemberDeclaration(ctx: KotlinParser.ClassMemberDeclarationContext?) {
+        super.enterClassMemberDeclaration(ctx)
+        if (ctx != null) {
+            collator.classMemberDecl(ctx)
+        }
+    }
 }

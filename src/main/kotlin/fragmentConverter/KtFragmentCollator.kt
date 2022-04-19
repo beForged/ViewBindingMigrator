@@ -44,7 +44,11 @@ class KtFragmentCollator(
             else -> {
                 val funBody = declarationContext.functionBody()
                 val contains = syntheticViews.map {
-                    funBody.text.contains(it.view)
+                    if (funBody?.text != null) {
+                        funBody.text.contains(it.view)
+                    } else {
+                        false
+                    }
                 }
                 if (contains.contains(true)) {
                     // extracts function body with whitespace
@@ -62,20 +66,27 @@ class KtFragmentCollator(
         }
     }
 
-    fun fragmentConverterModel(): FragmentConverterModel? {
-        return if (layoutBindingName != null || syntheticViews.isEmpty()
+    var variableDeclInterval: Interval? = null
+    override fun classMemberDecl(ctx: KotlinParser.ClassMemberDeclarationContext) {
+        variableDeclInterval = ctx.sourceInterval
+    }
+
+    override fun converterModel(): ConverterModel? {
+        return if (
+            (layoutBindingName != null || syntheticViews.isNotEmpty()) && variableDeclInterval != null
         ) {
             FragmentConverterModel(
-                bindingName = layoutBindingName!!,
-                layoutIdFunction = bindingLocation!!,
+                bindingName = layoutBindingName,
+                layoutIdFunction = bindingLocation,
                 onCreateExists = onCreateExists,
                 onCreateLocation = onCreateLocation,
                 onCreatedViewExists = onCreatedViewExists,
                 onCreatedViewLocation = onCreatedViewLocation,
                 onDestroyExists = onDestroyExists,
                 onDestroyLocation = onDestroyLocation,
-                syntheticImports = syntheticViews.toList(),
-                viewReference = viewReferences.toList()
+                syntheticImports = syntheticViews.toList().distinct(),
+                viewReference = viewReferences.toList().distinct(),
+                variableDeclInterval = variableDeclInterval!!
             )
         } else {
             println("missing layoutId or synthetic imports")

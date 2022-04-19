@@ -19,4 +19,8 @@ interface Collator {
     }
 
     fun extractFunctionDeclarations(declarationContext: KotlinParser.FunctionDeclarationContext)
+
+    fun classMemberDecl(ctx: KotlinParser.ClassMemberDeclarationContext)
+
+    fun converterModel(): ConverterModel?
 }
