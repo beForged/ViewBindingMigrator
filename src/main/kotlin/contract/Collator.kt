@@ -18,9 +18,20 @@ interface Collator {
         )
     }
 
+    fun extractInitializer(declaractionContext: KotlinParser.AnonymousInitializerContext) {
+    }
+
+    fun postSyntheticImport(declaractionContext: KotlinParser.ImportListContext) {
+    }
+
+    fun extractParam(declaractionContext: KotlinParser.ClassParameterContext) {}
+
     fun extractFunctionDeclarations(declarationContext: KotlinParser.FunctionDeclarationContext)
 
-    fun classMemberDecl(ctx: KotlinParser.ClassMemberDeclarationContext)
+    var variableDeclInterval: Interval?
+    fun classMemberDecl(ctx: KotlinParser.ClassMemberDeclarationContext) {
+        variableDeclInterval = ctx.sourceInterval
+    }
 
     fun converterModel(): ConverterModel?
 }

@@ -60,8 +60,8 @@ class FragmentRewriter : Rewriter {
         return rewriter
     }
 
-    override fun rewrite(model: ConverterModel, rewriter: TokenStreamRewriter): TokenStreamRewriter {
+    override fun rewrite(model: ConverterModel, rewriter: TokenStreamRewriter, filename: String): TokenStreamRewriter {
 
-        return rewriter
+        return rewriteFragment(model as FragmentConverterModel, rewriter)
     }
 }

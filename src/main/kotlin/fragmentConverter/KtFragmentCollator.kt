@@ -7,7 +7,8 @@ import org.antlr.v4.runtime.misc.Interval
 
 class KtFragmentCollator(
     override val syntheticViews: MutableList<ConverterModel.SyntheticImport> = mutableListOf(),
-    override val viewReferences: MutableList<ConverterModel.ViewReference> = mutableListOf()
+    override val viewReferences: MutableList<ConverterModel.ViewReference> = mutableListOf(),
+    override var variableDeclInterval: Interval? = null
 ) : Collator {
 
     var layoutBindingName: String? = null
@@ -64,11 +65,6 @@ class KtFragmentCollator(
                 }
             }
         }
-    }
-
-    var variableDeclInterval: Interval? = null
-    override fun classMemberDecl(ctx: KotlinParser.ClassMemberDeclarationContext) {
-        variableDeclInterval = ctx.sourceInterval
     }
 
     override fun converterModel(): ConverterModel? {

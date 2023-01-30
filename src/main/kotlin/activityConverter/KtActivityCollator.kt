@@ -6,7 +6,8 @@ import org.antlr.v4.runtime.misc.Interval
 
 class KtActivityCollator(
     override val syntheticViews: MutableList<ConverterModel.SyntheticImport> = mutableListOf(),
-    override val viewReferences: MutableList<ConverterModel.ViewReference> = mutableListOf()
+    override val viewReferences: MutableList<ConverterModel.ViewReference> = mutableListOf(),
+    override var variableDeclInterval: Interval? = null
 ) : Collator {
 
     var onCreateExists = false
@@ -38,11 +39,6 @@ class KtActivityCollator(
         if (declarationContext.functionBody().text.contains("findItem")) {
             findItem = true
         }
-    }
-
-    var variableDeclInterval: Interval? = null
-    override fun classMemberDecl(ctx: KotlinParser.ClassMemberDeclarationContext) {
-        variableDeclInterval = ctx.sourceInterval
     }
 
     private fun extractViewReferences(declarationContext: KotlinParser.FunctionBodyContext) {

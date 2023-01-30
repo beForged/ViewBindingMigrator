@@ -42,7 +42,7 @@ class ActivityRewriter : Rewriter {
         return rewriter
     }
 
-    override fun rewrite(model: ConverterModel, rewriter: TokenStreamRewriter): TokenStreamRewriter {
-        return rewriter
+    override fun rewrite(model: ConverterModel, rewriter: TokenStreamRewriter, filename: String): TokenStreamRewriter {
+        return rewriteActivity(model as ActivityConverterModel, rewriter, filename)
     }
 }

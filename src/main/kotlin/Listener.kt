@@ -12,8 +12,29 @@ class Listener(private val collator: Collator) : KotlinParserBaseListener() {
         }
     }
 
+    override fun exitImportList(ctx: KotlinParser.ImportListContext?) {
+        super.exitImportList(ctx)
+        if (ctx != null) {
+            collator.postSyntheticImport(ctx)
+        }
+    }
+
     override fun enterConstructorInvocation(ctx: KotlinParser.ConstructorInvocationContext?) {
         super.enterConstructorInvocation(ctx)
+    }
+
+    override fun enterClassParameter(ctx: KotlinParser.ClassParameterContext?) {
+        super.enterClassParameter(ctx)
+        if (ctx != null) {
+            collator.extractParam(ctx)
+        }
+    }
+
+    override fun enterAnonymousInitializer(ctx: KotlinParser.AnonymousInitializerContext?) {
+        super.enterAnonymousInitializer(ctx)
+        if (ctx != null) {
+            collator.extractInitializer(ctx)
+        }
     }
 
     override fun enterFunctionBody(ctx: KotlinParser.FunctionBodyContext?) {
