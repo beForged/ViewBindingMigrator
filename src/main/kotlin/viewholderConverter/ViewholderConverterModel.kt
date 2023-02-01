@@ -16,7 +16,7 @@ class ViewholderConverterModel(
     }
 
     fun replaceItemView(): String {
-        return "\n\tval itemBinding: ${bindingClassName()}"
+        return "\tval itemBinding: ${bindingClassName()}"
     }
 
     fun replaceViewReference(lst: List<String>): String {

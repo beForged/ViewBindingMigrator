@@ -15,7 +15,6 @@ class AdapterConverterModel(
             val regex = Regex("layout.([a-zA-Z0-9\\_]+),\\s*parent")
             if (it.contains(regex)) {
                 val match = regex.find(it)
-                println(match?.groupValues)
                 val name = "${match?.groupValues?.get(1)?.snakeToUpperCamelCase()}Binding"
 
                 it.replace(

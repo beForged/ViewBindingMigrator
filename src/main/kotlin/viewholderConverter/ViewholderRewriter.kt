@@ -19,7 +19,7 @@ class ViewholderRewriter : Rewriter {
 
         // replace itemview with itembinding
         model.viewParamLocation?.let {
-            rewriter.insertAfter(it.b, model.replaceItemView())
+            rewriter.replace(it.a, it.b, model.replaceItemView())
         }
         // replace every view instance of synthetic with ${CamelCaseLayoutId}Binding!!.view
         // if they have requireActivity(), may need to replace it with binding and snake->camelCase

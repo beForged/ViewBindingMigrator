@@ -45,14 +45,14 @@ class ViewholderCollator(
         if (syntheticViews.map { it.filename }.distinct().size > 1) {
             println("multiple synthetic imports! please manually verify")
         }
-        layoutBindingName = syntheticViews.map { it.filename }.sortedDescending().distinct()[0]
-        println(layoutBindingName)
+        if(syntheticViews.size > 0) {
+            layoutBindingName = syntheticViews.map { it.filename }.sortedDescending().distinct()[0]
+        }
     }
 
     var viewParamLocation: Interval? = null
 
     override fun extractParam(declaractionContext: KotlinParser.ClassParameterContext) {
-        println("params: ${declaractionContext.type().text}")
         val type = declaractionContext.type().text
         if (type == "View") {
             viewParamLocation = declaractionContext.sourceInterval
@@ -81,6 +81,5 @@ class ViewholderCollator(
                 )
             )
         }
-        println(viewReferences.toString())
     }
 }

@@ -24,6 +24,10 @@ class FileConverter {
         val fileName = file.absolutePath
 
         val collator = when {
+            fileName.contains("baseFragment") || fileName.contains("baseActivity") -> {
+                println("base file, skipping")
+                return false
+            }
             fileName.contains("Component") || fileName.contains("Module") -> {
                 println("dagger file")
                 return false
@@ -80,7 +84,11 @@ class FileConverter {
             }
         }
         // rewrite file
-        println("converted $fileName")
+        if(model == null ) {
+            println("skipped $fileName")
+        } else {
+            println("converted $fileName")
+        }
         return true
     }
 }
